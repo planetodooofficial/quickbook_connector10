@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record id="test_view_quickbook" model="ir.ui.view">
+                <field name="name">test.view.quickbook</field>
+                <field name="model">stock.picking</field>
+                <field name="inherit_id" ref="stock.view_picking_form"/>
+                <field name="arch" type="xml">
+                    <xpath expr="//button[@name='action_cancel']" position="after">
+                        <button name="generate_quick_data" string="QuickBooks"
+                             type="object" class="oe_highlight"  />
+                    </xpath>
+                </field>
+           </record>
+           
+           
+    </data>
+</odoo>

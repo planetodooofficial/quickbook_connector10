@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+        <record id="quick_acc_view" model="ir.ui.view" >
+            <field name="name">quick.acc.view.form</field>
+            <field name="model">quick.account</field>
+            <!--<field name="type">form</field>-->
+            <field name="arch" type="xml">
+                 <form string="quick account">
+                <group>
+                    <field name="name"/>
+                    <field name="acc_type"/>
+                    <field name="classification"/>
+                    <field name="active"/>
+                    <field name="quick_acc_id"/>
+                    <field name="acc_id"/>
+                </group>
+                 </form>
+            </field>   
+        </record>
+        
+           
+        <record id="quick_acc_tree_view" model="ir.ui.view">
+           <field name="name">quick.acc.tree.view</field>
+           <field name="model">quick.account</field>
+           <field name="arch" type="xml">
+               <tree string="quick account">
+                   <field name="name"/>
+                   <field name="quick_acc_id"/>
+                   <field name="acc_id"/>
+               </tree>
+           </field>
+        </record>
+  
+        <record id="action_quick_account" model="ir.actions.act_window">
+            <field name="name">Quick Account</field>
+            <field name="res_model">quick.account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_quick_account" name="Quick Account" parent="account.menu_finance_configuration" action="action_quick_account"/>
+        
+    </data>
+</odoo>

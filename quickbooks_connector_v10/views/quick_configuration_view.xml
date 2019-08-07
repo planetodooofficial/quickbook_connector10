@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+        <record id="quick_configuration_view" model="ir.ui.view" >
+            <field name="name">quick.configuration.view.form</field>
+            <field name="model">quick.configuration</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Order">
+                <group>
+                    <field name="production" on_change="get_url(production)"/>
+                    <!--<field name="url" />-->
+                    <field name="clientkey"/>
+                    <field name="clientsecret" password="True"/>
+                    <!--<field name="request_token_url"/>-->
+                    <!--<field name="access_token_url"/>-->
+                    <!--<field name="authorization_base_url"/>-->
+                    <!--<field name="company"/>-->
+                </group>
+                </form>
+            </field>   
+        </record>
+        
+           
+        <record id="quick_configuration_tree_view" model="ir.ui.view">
+           <field name="name">quick.configuration.tree.view</field>
+           <field name="model">quick.configuration</field>
+           <field name="arch" type="xml">
+               <tree string="quick Configuration">
+                   <field name="clientkey"/>
+               </tree>
+           </field>
+        </record>
+  
+        <record id="action_quick_configuration" model="ir.actions.act_window">
+            <field name="name">Quick Configuration</field>
+            <field name="res_model">quick.configuration</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_quick_config_menu" name="Quickbook" parent="base.menu_administration" />
+        <menuitem id="menu_quick_config" name="Quick config" parent="menu_quick_config_menu" action="action_quick_configuration"/>
+
+    </data>
+</odoo>

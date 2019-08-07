@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="invoice_form_cust">
+            <field name="name">invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page" position="after">
+                    <page string="Quickbook Information">
+                        <group colspan="4" col="4">
+                            <field name="quick_export" />
+                            <field name="paid_on_qb" />
+                            <field name="quick_invoice_id" />
+                            <field name="faulty" />
+                        </group>
+                        <group colspan="4" col="4">
+                            <field name="faulty_reason" />
+                        </group>
+                    </page>
+                </xpath> 
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="account_tax_cust">
+            <field name="name">invoice.tax.form</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='description']" position="after">
+                    <field name="quick_id" />
+                </xpath> 
+            </field>
+        </record>
+
+
+
+         <record model="ir.ui.view" id="account_account_chart_form_view">
+            <field name="name">account</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                <field name="user_type_id" position="after">
+                <field name="quickbook_chart_id"/>
+                </field>
+            </field>
+        </record>
+
+
+
+          <record model="ir.ui.view" id="account_view_payment_term_form">
+            <field name="name">payment</field>
+            <field name="model">account.payment.term</field>
+            <field name="inherit_id" ref="account.view_payment_term_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                <field name="quickbook_id"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="seq_account_chart" model="ir.sequence">
+            <field name="name">sequence</field>
+            <field name="code">account.account</field>
+            <field name="prefix">10000</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</odoo>

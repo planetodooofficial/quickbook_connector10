@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record model="ir.ui.view" id="view_partner_form_cust">
+            <field name="name">customer.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page" position="after">
+                    <page string="Quickbook Information">
+                        <group colspan="4" col="4">
+                            <field name="quick_id" />
+                            <field name="quic_bill_shipp"/>
+                            <field name="quick_export" />
+                            <field name="faulty" />
+                            <field name="create_time"/>
+                            <field name="last_update_time"/>
+                        </group>
+                        <group colspan="4" col="4">
+                            <field name="faulty_reason" />
+                        </group>
+                    </page>
+                </xpath>
+
+                 <!--<xpath expr="//field[@name='child_ids']/field[@name='email']" position="after">-->
+                        <!--<field name="quic_bill_shipp"/>-->
+                      <!--<field name="quic_bill_invoice"/>-->
+                <!--</xpath>-->
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_partner_title_form_inherit">
+            <field name="name">partner title</field>
+            <field name="model">res.partner.title</field>
+            <field name="inherit_id" ref="base.view_partner_title_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="quick_book_id"/>
+                </field>
+
+            </field>
+        </record>
+
+
+         <!--<record model="ir.ui.view" id="product_normal_form_view_cust">-->
+            <!--<field name="name">product.template</field>-->
+            <!--<field name="model">product.template</field>-->
+            <!--<field name="inherit_id" ref="product.product_template_only_form_view"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<data>-->
+                <!--&lt;!&ndash;<field name="barcode" position="after">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<field name="quick_prod_id"/>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<field name="new_id"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;</field>&ndash;&gt;-->
+                <!--</data>-->
+            <!--</field>-->
+        <!--</record>-->
+        <!---->
+        <!--<record model="ir.ui.view" id="view_order_form_cust">-->
+            <!--<field name="name">sale.order.form</field>-->
+            <!--<field name="model">sale.order</field>-->
+            <!--<field name="inherit_id" ref="sale.view_order_form"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<data>-->
+                <!--<field name="partner_id" position="after">-->
+                        <!--<field name="quick_export"/>-->
+                <!--</field>-->
+                <!---->
+                <!--</data>-->
+            <!--</field>-->
+        <!--</record>-->
+        <!---->
+        <!--<record model="ir.ui.view" id="product_category_form_view_inherit">-->
+            <!--<field name="name">category</field>-->
+            <!--<field name="model">product.category</field>-->
+            <!--<field name="inherit_id" ref="product.product_category_form_view"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<field name="parent_id" position="after">-->
+                        <!--<field name="quickbook_id"/>-->
+                <!--</field>-->
+            <!--</field>-->
+        <!--</record>-->
+
+</odoo>

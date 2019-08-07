@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+        <record id="quick_acc_merge_view" model="ir.ui.view" >
+            <field name="name">quick.acc.merge.view</field>
+            <field name="model">quick.marge</field>
+            <!--<field name="type">form</field>-->
+            <field name="arch" type="xml">
+                <form string="quick account">
+                <group>
+                    <field name="acc_id"/>
+                    <field name="acc_quick_id"/>
+                    
+                </group>
+                </form>
+            </field>   
+        </record>
+        
+           
+        <record id="quick_acc_tree_view" model="ir.ui.view">
+           <field name="name">quick.acc.tree.view</field>
+           <field name="model">quick.marge</field>
+           <field name="arch" type="xml">
+               <tree string="quick account">
+                   <field name="acc_id"/>
+                   <field name="acc_quick_id"/>
+               </tree>
+           </field>
+        </record>
+  
+        <record id="action_quick_account_merge" model="ir.actions.act_window">
+            <field name="name">Quick Account</field>
+            <field name="res_model">quick.marge</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_quick_account_merge" name="Account Merge" parent="account.menu_finance_configuration" action="action_quick_account_merge"/>
+        
+    </data>
+</odoo>
