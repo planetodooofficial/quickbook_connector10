@@ -1140,10 +1140,10 @@ class customer_sign_up(http.Controller):
         session_manager = Oauth2SessionManager(
             client_id=config_ids.clientkey,
             client_secret=config_ids.clientsecret,
-            base_url='http://localhost:8040/page/quick_book',
+            base_url='http://localhost:8068/page/quick_book',
         )
         print ("session_manager...........", session_manager)
-        callback_url = 'http://localhost:8040/page/quick_book'
+        callback_url = 'http://localhost:8068/page/quick_book'
         authorize_url = session_manager.get_authorize_url(callback_url)
         print ("authorize_url....dddddddd...........", authorize_url)
         # authorization_url = oauth.authorization_url(authorization_base_url)
@@ -1254,10 +1254,10 @@ class customer_sign_up(http.Controller):
         session_manager = Oauth2SessionManager(
             client_id=config_ids.clientkey,
             client_secret=config_ids.clientsecret,
-            base_url='http://localhost:8040/page/quick_book',
+            base_url='http://localhost:8068/page/quick_book',
         )
         print ("session_manager...........", session_manager)
-        callback_url = 'http://localhost:8040/page/quick_book'
+        callback_url = 'http://localhost:8068/page/quick_book'
         authorize_url = session_manager.get_authorize_url(callback_url)
         print ("authorize_url....dddddddd...........", authorize_url)
         # authorization_url = oauth.authorization_url(authorization_base_url)
@@ -1449,10 +1449,10 @@ class customer_sign_up(http.Controller):
         session_manager = Oauth2SessionManager(
             client_id=config_ids.clientkey,
             client_secret=config_ids.clientsecret,
-            base_url='http://localhost:8040/page/quick_book',
+            base_url='http://localhost:8068/page/quick_book',
         )
         print ("session_manager...........", session_manager)
-        callback_url = 'http://localhost:8040/page/quick_book'
+        callback_url = 'http://localhost:8068/page/quick_book'
         authorize_url = session_manager.get_authorize_url(callback_url)
         print ("authorize_url....dddddddd...........", authorize_url)
         # authorization_url = oauth.authorization_url(authorization_base_url)
@@ -1911,7 +1911,7 @@ class customer_sign_up(http.Controller):
             auth_client = AuthClient(
                 client_id=config_ids.clientkey,
                 client_secret=config_ids.clientsecret,
-                redirect_uri='http://localhost:8040/page/quick_book',
+                redirect_uri='http://localhost:8068 /page/quick_book',
                 environment='sandbox'
             )
             sc = [Scopes.ACCOUNTING]
