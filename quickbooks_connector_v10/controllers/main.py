@@ -1423,7 +1423,7 @@ class customer_sign_up(http.Controller):
         print"post", post
         cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
 
-        last_date = parse(post['last_dt_co'])
+        last_date = parse(post['export_dt_it'])
         tz = pytz.timezone("America/Toronto")
         aware_dt = tz.localize(last_date)
         cust_date = aware_dt.isoformat()
@@ -2222,8 +2222,8 @@ class customer_sign_up(http.Controller):
                     else:
                         self.set_stock(items.get('qty_available'),product_id)
         return True
-    
-    
+
+
     def export_items(self,realmid,access_token,accounts):
         cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
         quick_config_obj = request.env['quick.configuration']
@@ -2286,10 +2286,12 @@ class customer_sign_up(http.Controller):
                 tz = pytz.timezone("America/Toronto")
                 aware_dt = tz.localize(date)
                 cr_date = aware_dt.isoformat()
-                IncomeAccountRef = acc_ids.quick_acc_id if acc_ids else account_ids
+                if acc_ids or account_ids:
+                 IncomeAccountRef = acc_ids.quick_acc_id if acc_ids else account_ids
                 if not IncomeAccountRef:
                     IncomeAccountRef = ''
-                ExpenseAccountRef = acc_exp_ids.quick_acc_id if acc_exp_ids else account_exp_ids
+                if acc_ids or account_ids:
+                   ExpenseAccountRef = acc_exp_ids.quick_acc_id if acc_exp_ids else account_exp_ids
                 if not ExpenseAccountRef:
                     ExpenseAccountRef = ''
 
