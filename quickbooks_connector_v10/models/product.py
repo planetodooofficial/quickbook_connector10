@@ -8,6 +8,7 @@ class product_product(models.Model):
     quick_export = fields.Boolean('Quick Export')
 
 
+
 class product_template(models.Model):
     _inherit = "product.template"
 

@@ -224,7 +224,7 @@ class customer_sign_up(http.Controller):
                 self.export_items(realmid=realmid,access_token=acess_token,accounts=accounts)
 
             if test == 'export_invoice':
-                self.export_invoice(from_dt,to_dt)
+                self.export_invoice(from_dt,to_dt,realmid=realmid,access_token=acess_token)
 
             if test == 'export_purchase':
                 self.export_purchase(from_dt_pr,to_dt_pr)
@@ -1579,6 +1579,16 @@ class customer_sign_up(http.Controller):
     @http.route('/page/export_quick_b_invoice', auth='public', type='http', website=True)
     def export_quick_b_invoice(self, **post):
         cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
+        from_date = parse(post['from_dt_ex_in'])
+        tz = pytz.timezone("America/Toronto")
+        aware_from_dt = tz.localize(from_date)
+        inv_frm_date = aware_from_dt.isoformat()
+
+        to_date = parse(post['to_date_ex_in'])
+        ts = pytz.timezone("America/Toronto")
+        aware_to_dt = ts.localize(to_date)
+        inv_to_date = aware_to_dt.isoformat()
+
         global oauth 
         quick_config_obj = request.env['quick.configuration']
         quick_obj = request.env['quick.quick']
@@ -1602,24 +1612,46 @@ class customer_sign_up(http.Controller):
             print"=======uid=====",uid
         config_ids = quick_config_obj.search([])
         # config_data = quick_config_obj.browse(cr,uid,config_ids)
-        data = Quickbook(config_ids.clientkey, config_ids.clientsecret, config_ids.request_token_url, config_ids.access_token_url, config_ids.authorization_base_url)
-        oauth = data.connect()
-        request_token_url = config_ids.request_token_url
-        authorization_base_url = config_ids.authorization_base_url
-        oauth.fetch_request_token(request_token_url)
-        authorization_url = oauth.authorization_url(authorization_base_url)
+        # data = Quickbook(config_ids.clientkey, config_ids.clientsecret, config_ids.request_token_url, config_ids.access_token_url, config_ids.authorization_base_url)
+        # oauth = data.connect()
+        # request_token_url = config_ids.request_token_url
+        # authorization_base_url = config_ids.authorization_base_url
+        # oauth.fetch_request_token(request_token_url)
+        # authorization_url = oauth.authorization_url(authorization_base_url)
+        session_manager = Oauth2SessionManager(
+            client_id=config_ids.clientkey,
+            client_secret=config_ids.clientsecret,
+            base_url='http://localhost:8068/page/quick_book',
+        )
+        print ("session_manager...........", session_manager)
+        callback_url = 'http://localhost:8068/page/quick_book'
+        authorize_url = session_manager.get_authorize_url(callback_url)
+        print ("authorize_url....dddddddd...........", authorize_url)
+        # authorization_url = oauth.authorization_url(authorization_base_url)
+        # print ("authorization_url............",authorization_url)
+        url = request.httprequest.url
+        state_dict = {
+            'date': inv_to_date,
+
+
+        }
+        state_json = json.dumps(state_dict)
+        encoded_params = base64.urlsafe_b64encode(state_json)
+        state_param = str(encoded_params)
+        authorize_url = authorize_url.replace('None', state_param)
+
         values = {
             'export_invoice':True
         }
-        print"authorization_url_inv",authorization_url
-        if authorization_url:
+        print"authorization_url_inv",authorize_url
+        if authorize_url:
             global test
             global from_dt
             global to_dt
             test = 'export_invoice'
             from_dt  = post['from_dt_ex_in']
             to_dt = post['to_date_ex_in']
-            return json.dumps({'url': authorization_url})
+            return json.dumps({'url': authorize_url})
         else:
             return request.render("quickbooks_connector_v10.quick_book_page",values)
         
@@ -1852,7 +1884,7 @@ class customer_sign_up(http.Controller):
         return cust
     
 
-    def export_customer(self,realmid,acess_token):
+    def export_customer(self,realmid,acess_token,context):
         print"realmid===>", realmid
         cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
         quick_config_obj = request.env['quick.configuration']
@@ -1860,7 +1892,7 @@ class customer_sign_up(http.Controller):
         # config_data = quick_config_obj.browse(cr,uid,config_ids)
         partner_obj = request.env['res.partner']
         # print'context---------------',context
-        if request.env.context.get('customer_ids', False):
+        if context.get('customer_ids', False):
             update = False
             customer_ids = context['customer_ids']
         else:
@@ -2594,7 +2626,7 @@ class customer_sign_up(http.Controller):
         return True
     
     
-    def export_invoice(self,from_dt,to_dt):
+    def export_invoice(self,from_dt,to_dt,realmid,access_token):
         cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
         quick_config_obj = request.env['quick.configuration']
         quick_acc_obj = request.env['quick.account']
@@ -2624,8 +2656,11 @@ class customer_sign_up(http.Controller):
                 print"invoice_data.partner_id.quick_id-------@@@@@",invoice_data.partner_id.quick_id
                 if not invoice_data.partner_id.quick_id:
                     print'context-----------------#@@@@@@@@--------',context
+                    context = request.env.context.copy()
                     context.update({'customer_ids':[invoice_data.partner_id.id]})
-                    self.export_customer()
+                    request.env.context = context
+                    # self.with_context({'customer_ids': [invoice_data.partner_id.id]}).export_customer(realmid,access_token)
+                    self.export_customer(realmid, access_token, context=context)
                     cr.commit()
                 
             print"invoice_data",invoice_data
@@ -2646,7 +2681,7 @@ class customer_sign_up(http.Controller):
                 print"------line.product_id.type------",line.product_id
              
                
-                if not line.product_id.quick_prodheaders_id:
+                if not line.product_id.quick_prod_id:
                     prod_QB_id = product_obj.search([('name','=','Odoo QB Products')])
                     print"prod_QB_id===============",prod_QB_id
                     if not prod_QB_id:
@@ -2756,13 +2791,34 @@ class customer_sign_up(http.Controller):
 #            8 = Tax Sales CA - 8.25% -- 8.25%
 #            13 = Tax Sales CA - 8.0% -- 8.0%
             print"invoice_data.partner_id.quick_id========",invoice_data.partner_id.quick_id
-            invoice_data_xml += """<Invoice xmlns="http://schema.intuit.com/finance/v3">"""+line_data+"""<CustomerRef>%s</CustomerRef></Invoice>"""% (invoice_data.partner_id.quick_id)
+            invoice_data_xml += """<Invoice xmlns="http://schema.intuit.com/finance/v3">"""\
+                                +line_data+"""<CustomerRef>%s</CustomerRef></Invoice>"""% (invoice_data.partner_id.quick_id)
             print"=invoice_data=========>",invoice_data
 #            getresource = 'https://sandbox-quickbooks.api.intuit.com/v3/company/193514292321532/invoice'
-            getresource = config_ids.url+config_ids.company+'/invoice'
+#             getresource = config_ids.url+config_ids.company+'/invoice'
+#             getresource = config_ids.url+'/invoice'
+
             print"invoice_data_xml",invoice_data_xml
-            r = oauth.post(getresource,data = invoice_data_xml,headers=headers)
+
+
+            getresource = 'https://sandbox-quickbooks.api.intuit.com/v3/company/' + realmid + '/invoice?minorversion=4'
+
+
+            invoice_data_xml = invoice_data_xml.encode('utf-8')
+            auth_header = 'Bearer {0}'.format(access_token)
+            print"auth_header====>", auth_header
+            headers = {
+                'Authorization': auth_header,
+                 'Accept': 'application/xml',
+                 'content-type': 'application/xml'
+            }
+            r = requests.post(getresource,data = invoice_data_xml,headers=headers)
+            # r = oauth.post(getresource,data = invoice_data_xml,headers=headers)
             logger.error('++++r.status_code+++++++++++++ %s',r.status_code)
+
+
+            print"r&s========>", r.status_code
+
             print"r========>",r.content
             if r.status_code==200:
                 data = r.content
