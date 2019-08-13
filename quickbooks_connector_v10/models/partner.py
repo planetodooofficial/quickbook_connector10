@@ -8,7 +8,7 @@ import time
 class res_partner(models.Model):
     _inherit = "res.partner"
 
-    quick_id = fields.Char('QuickBook Id',readonly=True)
+    quick_id = fields.Char('QuickBook Id')
     quick_export = fields.Boolean('Quick Export')
     faulty = fields.Boolean('Faulty')
     faulty_reason = fields.Text('Faulty Reason')

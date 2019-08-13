@@ -1012,52 +1012,55 @@ class customer_sign_up(http.Controller):
                 logger.error('++++line+++++++++++++ %s', line)
                 value = str(line)
                 logger.error('++++value+++++++++++++ %s', value)
-                if 'None' in value:
+                if not 'None' in value:
                     logger.error('++++value+++++++++++++ %s')
                     pass
                 else:
                     logger.error('++++else+++++++++++++ %s')
                     amount = line.Amount or False
                     description = line.Description or ''
-                    if line.SalesItemLineDetail:
-                        sales_item_line = line.SalesItemLineDetail
-                        tax_boolean = sales_item_line.TaxCodeRef
-                        tax_val = tax_boolean.value
-                        # if (tax_val == 'TAX' and tax_n_id):
-                        #     tax_id = tax_n_id
-                        # else:
-                        #     tax_id=''
-                        item_ref = sales_item_line.ItemRef
-                        produ_name = item_ref.name or ''
-                        product_id = item_ref.value or False
-                        qty = sales_item_line.Qty or False
-                        rate = sales_item_line.UnitPrice or False
-                        quickbook_id = line.Id or False
-                        # account_id = request.env['account.account'].browse(140)
-                        product_vals = {
-                            'name': produ_name,
-                            'quick_prod_id': product_id,
-                        }
-                        product_id = request.env['product.product'].search([('quick_prod_id', '=', product_id)])
-                        if not product_id:
-                            product_id = request.env['product.product'].create(product_vals)
-                            prod_id = product_id.id
-                        else:
-                            product_id.write(product_vals)
-                            prod_id = product_id.id
-                        acc_id = accounts = product.product_tmpl_id.get_product_accounts(fpos)
-                        line_dict = {
-                            'product_id':prod_id,
-                            'name': description,
-                            'account_id': product_id.property_account_income_id.id,
-                            'quantity': qty,
-                            'price_unit': rate,
+                    try:
+                        if line.SalesItemLineDetail:
+                            sales_item_line = line.SalesItemLineDetail
+                            tax_boolean = sales_item_line.TaxCodeRef
+                            # tax_val = tax_boolean.value
+                            # if (tax_val == 'TAX' and tax_n_id):
+                            #     tax_id = tax_n_id
+                            # else:
+                            #     tax_id=''
+                            item_ref = sales_item_line.ItemRef
+                            produ_name = item_ref.name or ''
+                            product_id = item_ref.value or False
+                            qty = sales_item_line.Qty or False
+                            rate = sales_item_line.UnitPrice or False
+                            quickbook_id = line.Id or False
+                            # account_id = request.env['account.account'].browse(140)
+                            product_vals = {
+                                'name': produ_name,
+                                'quick_prod_id': product_id,
+                            }
+                            product_id = request.env['product.product'].search([('quick_prod_id', '=', product_id)])
+                            if not product_id:
+                                product_id = request.env['product.product'].create(product_vals)
+                                prod_id = product_id.id
+                            else:
+                                product_id.write(product_vals)
+                                prod_id = product_id.id
+                            # acc_id = accounts = product.product_tmpl_id.get_product_accounts(fpos)
+                            line_dict = {
+                                'product_id':prod_id,
+                                'name': description,
+                                'account_id': product_id.property_account_income_id.id,
+                                'quantity': qty,
+                                'price_unit': rate,
 
-                            # 'invoice_line_tax_ids': [(6, 0, [tax_id])]
-                        }
+                                # 'invoice_line_tax_ids': [(6, 0, [tax_id])]
+                            }
 
-                        invoice_line_id = request.env['account.invoice.line'].create(line_dict)
-                        line_list.append(invoice_line_id.id)
+                            invoice_line_id = request.env['account.invoice.line'].create(line_dict)
+                            line_list.append(invoice_line_id.id)
+                    except Exception as e:
+                        pass
 
             print("line_list...............", line_list)
             journal_browse_id = request.env['account.journal'].browse(1)
@@ -2791,8 +2794,10 @@ class customer_sign_up(http.Controller):
 #            8 = Tax Sales CA - 8.25% -- 8.25%
 #            13 = Tax Sales CA - 8.0% -- 8.0%
             print"invoice_data.partner_id.quick_id========",invoice_data.partner_id.quick_id
+            # invoice_data_xml += """<Invoice xmlns="http://schema.intuit.com/finance/v3">"""\
+            #                     +line_data+"""<CustomerRef>%s</CustomerRef></Invoice>"""% (invoice_data.partner_id.quick_id)
             invoice_data_xml += """<Invoice xmlns="http://schema.intuit.com/finance/v3">"""\
-                                +line_data+"""<CustomerRef>%s</CustomerRef></Invoice>"""% (invoice_data.partner_id.quick_id)
+                                +line_data+"""<CustomerRef>%s</CustomerRef></Invoice>"""% (invoice_data.partner_id.quick_id or invoice_data.partner_id.parent_id.quick_id)
             print"=invoice_data=========>",invoice_data
 #            getresource = 'https://sandbox-quickbooks.api.intuit.com/v3/company/193514292321532/invoice'
 #             getresource = config_ids.url+config_ids.company+'/invoice'
