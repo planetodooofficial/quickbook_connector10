@@ -1008,7 +1008,8 @@ class customer_sign_up(http.Controller):
             }
 
             for line in invoice_line:
-                print("each,,,,,,,,,,,,,", line)
+                print'type---->',type(line)
+                print"each,,,,,,,,,,,,,", line
                 logger.error('++++line+++++++++++++ %s', line)
                 value = str(line)
                 logger.error('++++value+++++++++++++ %s', value)
@@ -1059,8 +1060,11 @@ class customer_sign_up(http.Controller):
 
                             invoice_line_id = request.env['account.invoice.line'].create(line_dict)
                             line_list.append(invoice_line_id.id)
+
+
+
                     except Exception as e:
-                        pass
+                        continue
 
             print("line_list...............", line_list)
             journal_browse_id = request.env['account.journal'].browse(1)
