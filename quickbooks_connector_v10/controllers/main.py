@@ -214,7 +214,7 @@ class customer_sign_up(http.Controller):
                 else:
                     print "Error occured."
             if test == 'export_cust':
-                self.export_customer(realmid=realmid,acess_token=acess_token)
+                self.export_customer(realmid=realmid,acess_token=acess_token,context={})
 
             if test == 'export_vendor':
                 self.export_vendor(realmid=realmid,access_token=acess_token)
