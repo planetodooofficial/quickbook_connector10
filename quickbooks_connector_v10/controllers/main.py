@@ -313,8 +313,8 @@ class customer_sign_up(http.Controller):
                 create_time=''
                 last_update_time=''
 
-            account_rece_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')])
-            account_pay_id = request.env['account.account'].search([('user_type_id', '=', 'Payable')])
+            account_rece_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')],limit=1)
+            account_pay_id = request.env['account.account'].search([('user_type_id', '=', 'Payable')],limit=1)
             if customer.WebAddr:
                 web_add = customer.WebAddr
                 web_url = web_add.URI
@@ -520,8 +520,8 @@ class customer_sign_up(http.Controller):
 
             mobile = vendor.Mobile if vendor.Mobile else ''
             # notes = vendor.Notes if vendor.Notes else ''
-            account_rece_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')])
-            account_pay_id = request.env['account.account'].search([('user_type_id', '=', 'Payable')])
+            account_rece_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')],limit=1)
+            account_pay_id = request.env['account.account'].search([('user_type_id', '=', 'Payable')],limit=1)
             if vendor.WebAddr:
                 web_add = vendor.WebAddr
                 web_url = web_add.URI
@@ -773,7 +773,7 @@ class customer_sign_up(http.Controller):
                 'type': p_type,
                 'default_code': sku,
                 'list_price': sale_price,
-                'quick_prod_id': id,
+                'quick_prod_id': int(id),
                 'description_sale': description_sale,
                 'description_purchase': purchase_desc,
                 # 'categ_id':1,
@@ -795,6 +795,7 @@ class customer_sign_up(http.Controller):
             product_tmp_id = request.env['product.template'].search([('quick_prod_id', '=', id)])
             if not product_tmp_id:
                 tem_id = request.env['product.template'].create(product_val)
+                tem_id.write({'quick_prod_id':item.Id})
                 product_product_id = request.env['product.product'].search([('product_tmpl_id', '=', tem_id.id)])
                 product_product_id.quick_prod_id = tem_id.quick_prod_id
                 if product_val.get('type') == 'product':
@@ -1068,7 +1069,7 @@ class customer_sign_up(http.Controller):
 
             print("line_list...............", line_list)
             journal_browse_id = request.env['account.journal'].browse(1)
-            partner_id = request.env['res.partner'].search([('quick_id', '=', customer_quickbook_id)])
+            partner_id = request.env['res.partner'].sudo().search([('quick_id', '=', str(customer_quickbook_id))])
             if partner_id:
                 part_id = partner_id.id
             if not partner_id:
@@ -1082,7 +1083,7 @@ class customer_sign_up(http.Controller):
                     pass
                 partner_id = request.env['res.partner'].create(customer_val)
                 part_id = partner_id.id
-            account_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')])
+            account_id = request.env['account.account'].search([('user_type_id', '=', 'Receivable')],limit=1)
             # account_payment_term_id = request.env['account.payment.term'].search(
             #     [('quickbook_id', '=', term_quickbook_id)])
             # if account_payment_term_id:
@@ -1907,7 +1908,7 @@ class customer_sign_up(http.Controller):
             # customer_ids = partner_obj.search([])
             # [('quick_id', '=', False), ('quick_export', '=', False), ('faulty', '=', False)])
             customer_ids = partner_obj.search(
-                [('quick_id', '=', False), ('quick_export', '=', False), ('faulty', '=', False)])
+                [('quick_id', '=', False)])  # Changed by Amar
 
         print"customer_ids", customer_ids
         for customer_data in customer_ids:
@@ -1935,7 +1936,7 @@ class customer_sign_up(http.Controller):
                                                             <PostalCode>%s</PostalCode>
                                                         </BillAddr>
                                                     </Customer>""" % (
-                customer_data.parent_id.name, customer_data.parent_id.name or '', customer_data.parent_id.name, customer_data.phone,
+                customer_data.name or '', customer_data.display_name or '', customer_data.name, customer_data.phone,
                 customer_data.email or '', customer_data.street, customer_data.street2 or '', customer_data.city,
                 customer_data.country_id.name, customer_data.zip)
             print"=cust_data=========>", cust_data
@@ -1950,7 +1951,7 @@ class customer_sign_up(http.Controller):
             auth_client = AuthClient(
                 client_id=config_ids.clientkey,
                 client_secret=config_ids.clientsecret,
-                redirect_uri='http://localhost:8068 /page/quick_book',
+                redirect_uri='http://localhost:8068/page/quick_book',
                 environment='sandbox'
             )
             sc = [Scopes.ACCOUNTING]
@@ -2270,10 +2271,13 @@ class customer_sign_up(http.Controller):
         # config_data = quick_config_obj.browse(cr,uid,config_ids)
         product_obj = request.env['product.product']
         quick_acc_obj = request.env['quick.account']
-        product_ids = product_obj.search([])
+        product_ids = product_obj.search([('quick_export', '=', False)])
         # product_ids = product_obj.search([('quick_prod_id','=',False),('quick_export','=',False)])
         print"product_ids",product_ids
         AssetAccountRef = ''
+        account_ids = False
+        IncomeAccountRef = False
+        ExpenseAccountRef = False
         for product_data in product_ids:
             print"product_data",product_data
             logger.error('++++product_data++++++++++ %s',product_data)
@@ -2353,10 +2357,10 @@ class customer_sign_up(http.Controller):
 
                 prod_data += """<Item xmlns="http://schema.intuit.com/finance/v3" sparse="false">
                             <Name>%s</Name>
-                            <IncomeAccountRef >530</IncomeAccountRef>
+                            <IncomeAccountRef >79</IncomeAccountRef>
                             <PurchaseCost>%s</PurchaseCost>
-                            <ExpenseAccountRef>559</ExpenseAccountRef>
-                            <AssetAccountRef>560</AssetAccountRef>
+                            <ExpenseAccountRef>80</ExpenseAccountRef>
+                            <AssetAccountRef>81</AssetAccountRef>
                             <Type>Inventory</Type>
                             <TrackQtyOnHand>true</TrackQtyOnHand>,
                             <QtyOnHand>%s</QtyOnHand>,

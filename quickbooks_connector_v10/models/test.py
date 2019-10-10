@@ -30,7 +30,7 @@ class stock_picking(osv.osv):
         # callback_uri is a callback endpoint on your web server
         from requests_oauthlib import OAuth1Session
 
-        oauth = OAuth1Session(clientkey, clientsecret, callback_uri='http://localhost:8444/web?db=helpdesk_ext#id=3&view_type=form&model=stock.picking&action=349&active_id=2')
+        oauth = OAuth1Session(clientkey, clientsecret, callback_uri='http://localhost:8068/web?db=helpdesk_ext#id=3&view_type=form&model=stock.picking&action=349&active_id=2')
         oauth.fetch_request_token(request_token_url)
 
         # 3. Redirect user to your provider implementation for authorization
@@ -49,7 +49,7 @@ class stock_picking(osv.osv):
         # 4. Get the authorization verifier code from the callback url
         # redirect response is the complete callback_uri after you have authorized access to a company
 #        redirect_response = raw_input('Paste the full redirect URL here : ')
-        redirect_response = 'http://localhost:8444/?oauth_token=qyprdyT5RrH4QvBQgDKqUkjr4gb7YRLrbFyeTRREwpJKW87J&oauth_verifier=yyqa7tz&realmId=193514292321532&dataSource=QBO'
+        redirect_response = 'http://localhost:8068/?oauth_token=qyprdyT5RrH4QvBQgDKqUkjr4gb7YRLrbFyeTRREwpJKW87J&oauth_verifier=yyqa7tz&realmId=193514292321532&dataSource=QBO'
         oauth.parse_authorization_response(redirect_response)
 
         # 5. Fetch the access token
